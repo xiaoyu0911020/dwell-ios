@@ -30,8 +30,10 @@ jobs:
 
       - name: Create IPA
         run: |
+          APP=$(find build/DwellApp.xcarchive -name "*.app" -type d | head -1)
+          echo "Found app at: $APP"
           mkdir -p build/Payload
-          cp -r build/DwellApp.xcarchive/Products/Applications/DwellApp.app build/Payload/
+          cp -r "$APP" build/Payload/
           cd build && zip -r DwellApp.ipa Payload
 
       - name: Upload IPA
