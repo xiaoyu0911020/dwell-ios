@@ -13,15 +13,21 @@ jobs:
 
       - name: Build
         run: |
+          set -o pipefail
           xcodebuild -project DwellApp.xcodeproj \
             -scheme DwellApp \
             -destination 'generic/platform=iOS' \
             -configuration Release \
             -derivedDataPath build/derived \
-            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            DEVELOPMENT_TEAM=""
+            DEVELOPMENT_TEAM="" \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            2>&1 | tee build.log
+          echo "=== ERRORS ==="
+          grep -i "error:" build.log || echo "no error lines found"
 
       - name: Create IPA
         run: |
