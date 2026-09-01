@@ -11,27 +11,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: List Xcode
-        run: xcodebuild -version
-
       - name: Build
         run: |
           xcodebuild -project DwellApp.xcodeproj \
             -scheme DwellApp \
             -destination 'generic/platform=iOS' \
             -configuration Release \
-            -archivePath build/DwellApp.xcarchive \
-            archive \
+            -derivedDataPath build/derived \
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            DEVELOPMENT_TEAM="" \
-            2>&1 | tail -80
+            DEVELOPMENT_TEAM=""
 
       - name: Create IPA
         run: |
-          APP=$(find build/DwellApp.xcarchive -name "*.app" -type d | head -1)
-          echo "Found app at: $APP"
+          find build/derived -name "*.app" -type d
+          APP=$(find build/derived -name "*.app" -type d | head -1)
+          echo "App: $APP"
           mkdir -p build/Payload
           cp -r "$APP" build/Payload/
           cd build && zip -r DwellApp.ipa Payload
